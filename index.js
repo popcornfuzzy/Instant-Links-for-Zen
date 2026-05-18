@@ -1,98 +1,113 @@
-// ==UserScript==
-// @name Instant Links for Zen
-// @description Shift+Enter in der URL bar öffnet direkt das "I'm Feeling Lucky" Ergebnis von Google
-// @version 1.0.0
-// @match *://*/*
-// ==/UserScript==
+// Instant Links - Sine/fx-autoconfig script
+// Shift+Enter in the URL bar for instant page navigation
 
-(function () {
-  'use strict';
+const { Services } = ChromeUtils.importESModule('resource://gre/modules/Services.sys.mjs');
 
-  const LUCKY_PARAM = '&btnI=I%27m+Feeling+Lucky';
-  const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
+const InstantLinks = {
+  shiftHeld: false,
+  enabled: true,
+  showIndicator: true,
+  searchEngine: 'google',
 
-  let shiftHeld = false;
+  SEARCH_URLS: {
+    google: 'https://www.google.com/search?q=',
+    duckduckgo: 'https://duckduckgo.com/?q=',
+    bing: 'https://www.bing.com/search?q='
+  },
 
-  function onWindowLoad() {
-    const window = Services.wm.getMostRecentWindow('navigator:browser');
-    if (!window || !window.gBrowser) return;
+  INSTANT_PARAMS: {
+    google: '&btnI=I%27m+Feeling+Lucky',
+    duckduckgo: '',
+    bing: ''
+  },
 
-    const urlbarInput = window.document.getElementById('urlbar-input');
-    if (!urlbarInput) return;
+  init() {
+    this.loadPreferences();
+    this.setupListeners();
+    console.log('[Instant Links] Active. Hold Shift + Enter for instant navigation.');
+  },
 
-    urlbarInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Shift') {
-        shiftHeld = true;
-        updateVisualIndicator(window, true);
+  loadPreferences() {
+    try {
+      this.enabled = Services.prefs.getBoolPref('mod.instant-links.enabled', true);
+      this.showIndicator = Services.prefs.getBoolPref('mod.instant-links.show-indicator', true);
+      this.searchEngine = Services.prefs.getStringPref('mod.instant-links.search-engine', 'google');
+    } catch (e) {}
+  },
+
+  setupListeners() {
+    const windowListener = {
+      onWindowOpened(window) {
+        if (window.location?.href !== 'chrome://browser/content/browser.xhtml') return;
+        window.addEventListener('load', () => {
+          const urlbarInput = window.document.getElementById('urlbar-input');
+          if (!urlbarInput) return;
+          urlbarInput.addEventListener('keydown', e => InstantLinks.onKeyDown(e, window), true);
+          urlbarInput.addEventListener('keyup', e => InstantLinks.onKeyUp(e, window), true);
+          urlbarInput.addEventListener('blur', () => InstantLinks.onBlur(window), true);
+        }, { once: true });
       }
-    });
-
-    urlbarInput.addEventListener('keyup', (event) => {
-      if (event.key === 'Shift') {
-        shiftHeld = false;
-        updateVisualIndicator(window, false);
-      }
-    });
-
-    urlbarInput.addEventListener('blur', () => {
-      shiftHeld = false;
-      updateVisualIndicator(window, false);
-    });
-
-    const originalHandleCommand = window.gURLBar.handleCommand.bind(window.gURLBar);
-
-    window.gURLBar.handleCommand = function (event) {
-      const input = this.input.value.trim();
-
-      if (shiftHeld && input && !input.startsWith('http') && !input.includes('.')) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const luckyUrl = GOOGLE_SEARCH_URL + encodeURIComponent(input) + LUCKY_PARAM;
-
-        const tab = window.gBrowser.addTrustedTab(luckyUrl, {
-          triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}),
-        });
-
-        this.value = '';
-        this.closePopup();
-        shiftHeld = false;
-        updateVisualIndicator(window, false);
-        return;
-      }
-
-      return originalHandleCommand(event);
     };
 
-    console.log('Instant Links for Zen: Aktiviert. Drücke Shift+Enter für Google "I\'m Feeling Lucky".');
-  }
+    Services.wm.addListener(windowListener);
 
-  function updateVisualIndicator(window, isActive) {
+    const existingWindow = Services.wm.getMostRecentWindow('navigator:browser');
+    if (existingWindow) {
+      windowListener.onWindowOpened(existingWindow);
+    }
+  },
+
+  onKeyDown(event, window) {
+    if (!this.enabled) return;
+
+    if (event.key === 'Shift' && !event.repeat) {
+      this.shiftHeld = true;
+      if (this.showIndicator) this.setIndicator(window, true);
+    }
+
+    if (event.key === 'Enter' && this.shiftHeld) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.openInstantResult(window);
+    }
+  },
+
+  onKeyUp(event, window) {
+    if (event.key === 'Shift') {
+      this.shiftHeld = false;
+      if (this.showIndicator) this.setIndicator(window, false);
+    }
+  },
+
+  onBlur(window) {
+    this.shiftHeld = false;
+    if (this.showIndicator) this.setIndicator(window, false);
+  },
+
+  openInstantResult(window) {
+    const input = window.gURLBar?.value?.trim();
+    if (!input || input.match(/^https?:\/\//) || input.includes('.')) return;
+
+    const baseUrl = this.SEARCH_URLS[this.searchEngine] || this.SEARCH_URLS.google;
+    const instantParam = this.INSTANT_PARAMS[this.searchEngine] || '';
+    const url = baseUrl + encodeURIComponent(input) + instantParam;
+
+    try {
+      window.gBrowser.addTrustedTab(url);
+      window.gURLBar.value = '';
+    } catch (e) {
+      console.error('[Instant Links] Error:', e);
+    }
+
+    this.shiftHeld = false;
+    if (this.showIndicator) this.setIndicator(window, false);
+  },
+
+  setIndicator(window, active) {
     const urlbar = window.document.getElementById('urlbar');
     if (!urlbar) return;
-
-    if (isActive) {
-      urlbar.setAttribute('instant-lucky', 'true');
-    } else {
-      urlbar.removeAttribute('instant-lucky');
-    }
+    active ? urlbar.setAttribute('instant-links', 'true') : urlbar.removeAttribute('instant-links');
   }
+};
 
-  Services.wm.addListener({
-    onOpenWindow: (xulWindow) => {
-      const domWindow = xulWindow.docShell.domWindow;
-      domWindow.addEventListener('load', () => {
-        if (domWindow.location.href === 'chrome://browser/content/browser.xhtml') {
-          onWindowLoad();
-        }
-      }, { once: true });
-    },
-    onCloseWindow: () => {},
-    onWindowTitleChange: () => {},
-  });
-
-  const existingWindow = Services.wm.getMostRecentWindow('navigator:browser');
-  if (existingWindow && existingWindow.document.readyState === 'complete') {
-    onWindowLoad();
-  }
-})();
+InstantLinks.init();

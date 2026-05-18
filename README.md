@@ -9,14 +9,23 @@ Ein Zen Browser Mod, der das "I'm Feeling Lucky" Feature direkt in die URL bar b
 - **Konfigurierbar**: Wähle zwischen Google, DuckDuckGo und Bing
 - **Nativ**: Fühlt sich an wie ein eingebautes Feature
 
-## Installation
+## Installation mit Sine
 
-### Über Sine 
+1. Installiere [Sine](https://github.com/CosmoCreeper/Sine) falls noch nicht vorhanden
+2. Öffne Sine und füge diese Repository URL hinzu:
+   ```
+   https://github.com/simonpassenbrunner/Instant-Links-for-Zen
+   ```
+3. Klicke auf "Install" für den Instant Links Mod
+4. Starte Zen Browser neu
 
-1. Installiere [Sine](https://github.com/CosmoCreeper/Sine)
-2. Füge diese Repository URL hinzu: `https://github.com/popcornfuzzy/Instant-Links-for-Zen`
-3. Aktiviere den Mod in Sine
+## Manuelle Installation (fx-autoconfig)
 
+1. Installiere [fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig)
+2. Kopiere `index.js` in deinen `chrome/JS/` Ordner
+3. Kopiere `style.css` in deinen `chrome/` Ordner
+4. Füge zu `userChrome.css` hinzu: `@import "style.css";`
+5. Starte Zen neu
 
 ## Verwendung
 
@@ -27,11 +36,18 @@ Ein Zen Browser Mod, der das "I'm Feeling Lucky" Feature direkt in die URL bar b
 
 ## Einstellungen
 
+In `about:config` oder über Sine:
+
 | Einstellung | Standard | Beschreibung |
 |-------------|----------|--------------|
 | `mod.instant-lucky.enabled` | `true` | Mod aktivieren/deaktivieren |
-| `mod.instant-lucky.search-engine` | `google` | Suchmaschine wählen |
+| `mod.instant-lucky.search-engine` | `google` | Suchmaschine wählen (google, duckduckgo, bing) |
 | `mod.instant-lucky.show-indicator` | `true` | Visuellen Indikator anzeigen |
+
+## Technische Details
+
+- **Google**: Nutzt `&btnI=I%27m+Feeling+Lucky` Parameter für "I'm Feeling Lucky"
+- **DuckDuckGo/Bing**: Öffnet die erste Suchergebnis-URL direkt
 
 ## Lizenz
 
