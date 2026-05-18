@@ -1,6 +1,10 @@
 #urlbar[instant-links="true"] #urlbar-input {
-  background: linear-gradient(90deg, rgba(66, 133, 244, 0.1), rgba(52, 168, 83, 0.1)) !important;
-  border-color: rgba(66, 133, 244, 0.5) !important;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--zen-colors-primary) 15%, transparent),
+    color-mix(in srgb, var(--zen-colors-secondary) 15%, transparent)
+  ) !important;
+  border-color: color-mix(in srgb, var(--zen-colors-primary) 60%, transparent) !important;
 }
 
 #urlbar[instant-links="true"]::after {
@@ -10,8 +14,8 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 11px;
-  color: #4285f4;
-  opacity: 0.8;
+  color: var(--zen-colors-primary);
+  opacity: 0.85;
   pointer-events: none;
   font-weight: 500;
 }
