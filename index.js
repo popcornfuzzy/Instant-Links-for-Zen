@@ -1,113 +1,116 @@
-// Instant Links - Sine/fx-autoconfig script
-// Shift+Enter in the URL bar for instant page navigation
+(function() {
+    'use strict';
 
-const { Services } = ChromeUtils.importESModule('resource://gre/modules/Services.sys.mjs');
-
-const InstantLinks = {
-  shiftHeld: false,
-  enabled: true,
-  showIndicator: true,
-  searchEngine: 'google',
-
-  SEARCH_URLS: {
-    google: 'https://www.google.com/search?q=',
-    duckduckgo: 'https://duckduckgo.com/?q=',
-    bing: 'https://www.bing.com/search?q='
-  },
-
-  INSTANT_PARAMS: {
-    google: '&btnI=I%27m+Feeling+Lucky',
-    duckduckgo: '',
-    bing: ''
-  },
-
-  init() {
-    this.loadPreferences();
-    this.setupListeners();
-    console.log('[Instant Links] Active. Hold Shift + Enter for instant navigation.');
-  },
-
-  loadPreferences() {
-    try {
-      this.enabled = Services.prefs.getBoolPref('mod.instant-links.enabled', true);
-      this.showIndicator = Services.prefs.getBoolPref('mod.instant-links.show-indicator', true);
-      this.searchEngine = Services.prefs.getStringPref('mod.instant-links.search-engine', 'google');
-    } catch (e) {}
-  },
-
-  setupListeners() {
-    const windowListener = {
-      onWindowOpened(window) {
-        if (window.location?.href !== 'chrome://browser/content/browser.xhtml') return;
-        window.addEventListener('load', () => {
-          const urlbarInput = window.document.getElementById('urlbar-input');
-          if (!urlbarInput) return;
-          urlbarInput.addEventListener('keydown', e => InstantLinks.onKeyDown(e, window), true);
-          urlbarInput.addEventListener('keyup', e => InstantLinks.onKeyUp(e, window), true);
-          urlbarInput.addEventListener('blur', () => InstantLinks.onBlur(window), true);
-        }, { once: true });
-      }
+    const PREF_PREFIX = 'mod.instant-links.';
+    const LUCKY_PARAMS = {
+        google: '&btnI=I%27m+Feeling+Lucky',
+        duckduckgo: '',
+        bing: ''
+    };
+    const SEARCH_URLS = {
+        google: 'https://www.google.com/search?q=',
+        duckduckgo: 'https://duckduckgo.com/?q=',
+        bing: 'https://www.bing.com/search?q='
     };
 
-    Services.wm.addListener(windowListener);
+    let shiftHeld = false;
+    let enabled = true;
+    let showIndicator = true;
+    let searchEngine = 'google';
 
-    const existingWindow = Services.wm.getMostRecentWindow('navigator:browser');
-    if (existingWindow) {
-      windowListener.onWindowOpened(existingWindow);
-    }
-  },
-
-  onKeyDown(event, window) {
-    if (!this.enabled) return;
-
-    if (event.key === 'Shift' && !event.repeat) {
-      this.shiftHeld = true;
-      if (this.showIndicator) this.setIndicator(window, true);
-    }
-
-    if (event.key === 'Enter' && this.shiftHeld) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.openInstantResult(window);
-    }
-  },
-
-  onKeyUp(event, window) {
-    if (event.key === 'Shift') {
-      this.shiftHeld = false;
-      if (this.showIndicator) this.setIndicator(window, false);
-    }
-  },
-
-  onBlur(window) {
-    this.shiftHeld = false;
-    if (this.showIndicator) this.setIndicator(window, false);
-  },
-
-  openInstantResult(window) {
-    const input = window.gURLBar?.value?.trim();
-    if (!input || input.match(/^https?:\/\//) || input.includes('.')) return;
-
-    const baseUrl = this.SEARCH_URLS[this.searchEngine] || this.SEARCH_URLS.google;
-    const instantParam = this.INSTANT_PARAMS[this.searchEngine] || '';
-    const url = baseUrl + encodeURIComponent(input) + instantParam;
-
-    try {
-      window.gBrowser.addTrustedTab(url);
-      window.gURLBar.value = '';
-    } catch (e) {
-      console.error('[Instant Links] Error:', e);
+    function getPref(name, defaultValue) {
+        try {
+            const type = Services.prefs.getPrefType(name);
+            if (type === Services.prefs.PREF_STRING) return Services.prefs.getStringPref(name);
+            if (type === Services.prefs.PREF_INT) return Services.prefs.getIntPref(name);
+            if (type === Services.prefs.PREF_BOOL) return Services.prefs.getBoolPref(name);
+        } catch (e) {}
+        return defaultValue;
     }
 
-    this.shiftHeld = false;
-    if (this.showIndicator) this.setIndicator(window, false);
-  },
+    function loadPrefs() {
+        enabled = getPref(PREF_PREFIX + 'enabled', true);
+        showIndicator = getPref(PREF_PREFIX + 'show-indicator', true);
+        searchEngine = getPref(PREF_PREFIX + 'search-engine', 'google');
+    }
 
-  setIndicator(window, active) {
-    const urlbar = window.document.getElementById('urlbar');
-    if (!urlbar) return;
-    active ? urlbar.setAttribute('instant-links', 'true') : urlbar.removeAttribute('instant-links');
-  }
-};
+    function openLuckyTab(input) {
+        if (!input || !input.trim()) return;
+        const baseUrl = SEARCH_URLS[searchEngine] || SEARCH_URLS.google;
+        const luckyParam = LUCKY_PARAMS[searchEngine] || '';
+        const url = baseUrl + encodeURIComponent(input.trim()) + luckyParam;
 
-InstantLinks.init();
+        try {
+            gBrowser.addTrustedTab(url);
+            const urlbar = document.getElementById('urlbar');
+            if (urlbar) urlbar.value = '';
+        } catch (e) {
+            console.error('[Instant Links] Error:', e);
+        }
+    }
+
+    function setIndicator(active) {
+        if (!showIndicator) return;
+        const urlbar = document.getElementById('urlbar');
+        if (!urlbar) return;
+        if (active) {
+            urlbar.setAttribute('instant-links', 'true');
+        } else {
+            urlbar.removeAttribute('instant-links');
+        }
+    }
+
+    function handleKeyDown(e) {
+        if (!enabled) return;
+        if (e.target.id !== 'urlbar-input' && !e.target.classList.contains('urlbar-input')) return;
+
+        if (e.key === 'Shift' && !e.repeat) {
+            shiftHeld = true;
+            setIndicator(true);
+        }
+
+        if (e.key === 'Enter' && shiftHeld) {
+            e.preventDefault();
+            e.stopPropagation();
+            const input = gURLBar?.value || '';
+            if (input && !input.match(/^https?:\/\//) && !input.includes('.') && !input.includes(' ')) {
+                openLuckyTab(input);
+            }
+            shiftHeld = false;
+            setIndicator(false);
+        }
+    }
+
+    function handleKeyUp(e) {
+        if (e.key === 'Shift') {
+            shiftHeld = false;
+            setIndicator(false);
+        }
+    }
+
+    function handleBlur() {
+        shiftHeld = false;
+        setIndicator(false);
+    }
+
+    function attachListeners() {
+        const urlbar = document.getElementById('urlbar-input');
+        if (!urlbar) {
+            setTimeout(attachListeners, 500);
+            return;
+        }
+
+        urlbar.addEventListener('keydown', handleKeyDown, true);
+        urlbar.addEventListener('keyup', handleKeyUp, true);
+        urlbar.addEventListener('blur', handleBlur, true);
+
+        console.log('[Instant Links] Initialized. Hold Shift + Enter for instant link.');
+    }
+
+    loadPrefs();
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        attachListeners();
+    } else {
+        window.addEventListener('DOMContentLoaded', attachListeners);
+    }
+})();

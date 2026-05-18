@@ -1,21 +1,19 @@
-#urlbar[instant-links="true"] #urlbar-input {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--zen-colors-primary) 15%, transparent),
-    color-mix(in srgb, var(--zen-colors-secondary) 15%, transparent)
-  ) !important;
-  border-color: color-mix(in srgb, var(--zen-colors-primary) 60%, transparent) !important;
+#urlbar[instant-links="true"] {
+  border-color: var(--zen-colors-primary, #4285f4) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--zen-colors-primary, #4285f4) 30%, transparent) !important;
 }
 
 #urlbar[instant-links="true"]::after {
   content: "Instant Link";
   position: absolute;
-  right: 12px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 11px;
-  color: var(--zen-colors-primary);
-  opacity: 0.85;
+  color: var(--zen-colors-primary, #4285f4);
+  opacity: 0.9;
   pointer-events: none;
   font-weight: 500;
+  font-family: system-ui, -apple-system, sans-serif;
+  z-index: 1000;
 }
