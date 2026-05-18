@@ -1,13 +1,16 @@
 # Instant Links for Zen
 
-A Zen Browser mod that provides instant navigation from the URL bar.
+A visual indicator mod that enhances Zen Browser's built-in instant link feature.
 
 ## Features
 
-- **Shift+Enter Shortcut**: Hold `Shift` and press `Enter` in the URL bar for instant navigation to the most relevant result
-- **Visual Indicator**: Shows "Instant Link" when Shift is held
-- **Configurable**: Choose between Google, DuckDuckGo, and Bing search engines
-- **Native Feel**: Works like a built-in browser feature
+- **Visual Indicator**: When you hold `Shift` in the URL bar, an outline appears to show that the `Shift+Enter` instant link feature is active
+- **Help Text**: Shows "Shift+Enter: Instant Link" tooltip when Shift is held
+- **Uses Native Feature**: Works with Zen's built-in `Cmd+Enter` instant link functionality
+
+## How It Works
+
+Zen Browser already has a built-in instant link feature using `Cmd+Enter` (or `Ctrl+Enter` on Windows/Linux). This mod adds a visual indicator to show when `Shift+Enter` will trigger the instant link.
 
 ## Installation with Sine
 
@@ -27,22 +30,9 @@ A Zen Browser mod that provides instant navigation from the URL bar.
 4. Add to `userChrome.css`: `@import "style.css";`
 5. Restart Zen
 
-## Usage
+## Note
 
-1. Open a new tab (`Ctrl+T` / `Cmd+T`)
-2. Type your search query in the URL bar
-3. Press `Enter` for normal search
-4. Hold `Shift` + press `Enter` for instant navigation
-
-## Settings
-
-In `about:config` or via Sine:
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `mod.instant-links.enabled` | `true` | Enable/disable the mod |
-| `mod.instant-links.search-engine` | `google` | Search engine (google, duckduckgo, bing) |
-| `mod.instant-links.show-indicator` | `true` | Show visual indicator |
+This mod only provides a visual indicator. The instant link functionality is built into Zen Browser. You can rebind the keyboard shortcut in `Settings > Keyboard Shortcuts`.
 
 ## License
 

@@ -1,44 +1,21 @@
-#instant-links-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    color: var(--zen-colors-secondary, #888);
-    opacity: 0.6;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
+#urlbar[instant-link-mode="true"] {
+    outline: 2px solid var(--zen-colors-primary, #4285f4) !important;
+    outline-offset: -2px;
 }
 
-#instant-links-icon svg {
-    width: 14px;
-    height: 14px;
+#urlbar[instant-link-mode="true"] #urlbar-input {
+    background-color: color-mix(in srgb, var(--zen-colors-primary, #4285f4) 10%, transparent) !important;
 }
 
-#instant-links-icon:hover {
-    opacity: 1;
-}
-
-#instant-links-icon.active {
-    color: var(--zen-colors-primary, #4285f4);
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-#urlbar[instant-links="true"] {
-    border-color: var(--zen-colors-primary, #4285f4) !important;
-}
-
-#urlbar[instant-links="true"] #urlbar-input-container::before {
-    content: "Instant Link";
+#urlbar[instant-link-mode="true"]::after {
+    content: "Shift+Enter: Instant Link";
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 11px;
+    font-size: 10px;
     color: var(--zen-colors-primary, #4285f4);
-    opacity: 0.9;
+    opacity: 0.8;
     pointer-events: none;
     font-weight: 500;
     font-family: system-ui, -apple-system, sans-serif;

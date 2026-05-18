@@ -1,12 +1,11 @@
 {
   "id": "instant-links",
   "name": "Instant Links",
-  "description": "Hold Shift+Enter in the URL bar for instant page navigation",
+  "description": "Visual indicator when Shift is held in URL bar for instant link feature",
   "version": "1.0.0",
   "author": "popcornfuzzy",
   "license": "MIT",
   "repository": "https://github.com/popcornfuzzy/Instant-Links-for-Zen",
-  "preferences": "preferences.json",
   "style": "style.css",
   "readme": "README.md",
   "scripts": {
@@ -14,7 +13,7 @@
       "include": ["chrome://browser/content/browser.xhtml"]
     }
   },
-  "tags": ["URL Bar", "Instant", "Navigation"],
+  "tags": ["URL Bar", "Visual", "Indicator"],
   "createdAt": "2025-05-18",
   "updatedAt": "2026-05-18"
 }
