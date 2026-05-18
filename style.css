@@ -1,19 +1,46 @@
-#urlbar[instant-links="true"] {
-  border-color: var(--zen-colors-primary, #4285f4) !important;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--zen-colors-primary, #4285f4) 30%, transparent) !important;
+#instant-links-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    color: var(--zen-colors-secondary, #888);
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
-#urlbar[instant-links="true"]::after {
-  content: "Instant Link";
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 11px;
-  color: var(--zen-colors-primary, #4285f4);
-  opacity: 0.9;
-  pointer-events: none;
-  font-weight: 500;
-  font-family: system-ui, -apple-system, sans-serif;
-  z-index: 1000;
+#instant-links-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+#instant-links-icon:hover {
+    opacity: 1;
+}
+
+#instant-links-icon.active {
+    color: var(--zen-colors-primary, #4285f4);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+#urlbar[instant-links="true"] {
+    border-color: var(--zen-colors-primary, #4285f4) !important;
+}
+
+#urlbar[instant-links="true"] #urlbar-input-container::before {
+    content: "Instant Link";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--zen-colors-primary, #4285f4);
+    opacity: 0.9;
+    pointer-events: none;
+    font-weight: 500;
+    font-family: system-ui, -apple-system, sans-serif;
+    z-index: 1000;
 }
