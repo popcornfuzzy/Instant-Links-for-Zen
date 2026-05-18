@@ -4,35 +4,54 @@
     const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 
     let shiftHeld = false;
-    let initialized = false;
 
     function init() {
-        if (initialized) return;
-        initialized = true;
-
-        if (document.readyState === 'complete') {
-            attachListeners();
+        if (document.readyState !== 'complete') {
+            window.addEventListener('load', onLoad);
         } else {
-            window.addEventListener('load', attachListeners);
+            onLoad();
         }
+    }
+
+    function onLoad() {
+        waitForUrlbar().then(() => {
+            console.log('[Instant Links] Initialized.');
+            attachListeners();
+        }).catch(() => {
+            console.error('[Instant Links] Failed to initialize.');
+        });
+    }
+
+    function waitForUrlbar() {
+        return new Promise((resolve, reject) => {
+            let attempts = 0;
+            const maxAttempts = 50;
+
+            function check() {
+                attempts++;
+                const input = document.getElementById('urlbar-input');
+                if (input) {
+                    resolve();
+                } else if (attempts < maxAttempts) {
+                    setTimeout(check, 100);
+                } else {
+                    reject();
+                }
+            }
+            check();
+        });
     }
 
     function attachListeners() {
         const input = document.getElementById('urlbar-input');
-        if (!input) {
-            setTimeout(attachListeners, 200);
-            return;
-        }
+        if (!input) return;
 
-        input.addEventListener('keydown', handleKeyDown, true);
-        input.addEventListener('keyup', handleKeyUp, true);
-        input.addEventListener('blur', handleBlur, true);
-
-        console.log('[Instant Links] Ready.');
+        input.addEventListener('keydown', onKeyDown, true);
+        input.addEventListener('keyup', onKeyUp, true);
     }
 
-    function handleKeyDown(event) {
-        if (event.key === 'Shift' && !event.repeat) {
+    function onKeyDown(event) {
+        if (event.key === 'Shift') {
             shiftHeld = true;
             updateIndicator(true);
         }
@@ -40,27 +59,39 @@
         if (event.key === 'Enter' && shiftHeld) {
             event.preventDefault();
             event.stopPropagation();
-
-            const input = document.getElementById('urlbar-input');
-            const value = input?.value?.trim() || '';
-
-            if (value && !value.match(/^https?:\/\//)) {
-                openInstantLink(value);
-            }
-
-            shiftHeld = false;
-            updateIndicator(false);
+            handleEnter();
         }
     }
 
-    function handleKeyUp(event) {
+    function onKeyUp(event) {
         if (event.key === 'Shift') {
             shiftHeld = false;
             updateIndicator(false);
         }
     }
 
-    function handleBlur() {
+    function updateIndicator(active) {
+        const urlbar = document.getElementById('urlbar');
+        if (urlbar) {
+            if (active) {
+                urlbar.setAttribute('instant-link-mode', 'true');
+            } else {
+                urlbar.removeAttribute('instant-link-mode');
+            }
+        }
+    }
+
+    async function handleEnter() {
+        const input = document.getElementById('urlbar-input');
+        const value = input?.value?.trim() || '';
+
+        if (!value || value.match(/^https?:\/\//)) {
+            shiftHeld = false;
+            updateIndicator(false);
+            return;
+        }
+
+        await openInstantLink(value);
         shiftHeld = false;
         updateIndicator(false);
     }
@@ -71,9 +102,7 @@
         try {
             const response = await fetch(searchUrl, {
                 credentials: 'omit',
-                headers: {
-                    'Accept': 'text/html'
-                }
+                mode: 'cors'
             });
 
             const text = await response.text();
@@ -83,19 +112,14 @@
                 openTab(firstUrl);
             }
         } catch (e) {
-            console.error('[Instant Links] Error:', e);
+            openTab(searchUrl);
         }
     }
 
     function openTab(url) {
-        try {
-            const tab = gBrowser.addTrustedTab(url);
-            gBrowser.selectedTab = tab;
-            if (gURLBar) gURLBar.value = '';
-            console.log('[Instant Links] Opened:', url);
-        } catch (e) {
-            console.error('[Instant Links] Tab error:', e);
-        }
+        const tab = gBrowser.addTrustedTab(url);
+        gBrowser.selectedTab = tab;
+        if (gURLBar) gURLBar.value = '';
     }
 
     function extractFirstResult(html) {
@@ -113,17 +137,6 @@
             }
         } catch (e) {}
         return null;
-    }
-
-    function updateIndicator(active) {
-        const urlbar = document.getElementById('urlbar');
-        if (!urlbar) return;
-
-        if (active) {
-            urlbar.setAttribute('instant-link-mode', 'true');
-        } else {
-            urlbar.removeAttribute('instant-link-mode');
-        }
     }
 
     init();
