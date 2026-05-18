@@ -1,8 +1,8 @@
 {
   "id": "instant-links",
   "name": "Instant Links",
-  "description": "Visual indicator when Shift is held in URL bar for instant link feature",
-  "version": "1.0.0",
+  "description": "Hold Shift+Enter in the URL bar for instant navigation to the top search result",
+  "version": "1.1.0",
   "author": "popcornfuzzy",
   "license": "MIT",
   "repository": "https://github.com/popcornfuzzy/Instant-Links-for-Zen",
@@ -13,7 +13,7 @@
       "include": ["chrome://browser/content/browser.xhtml"]
     }
   },
-  "tags": ["URL Bar", "Visual", "Indicator"],
+  "tags": ["URL Bar", "Instant", "Navigation"],
   "createdAt": "2025-05-18",
   "updatedAt": "2026-05-18"
 }
