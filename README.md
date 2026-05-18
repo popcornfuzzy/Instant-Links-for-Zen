@@ -1,6 +1,6 @@
 # Instant Links for Zen
 
-A visual indicator mod that enhances Zen Browser's built-in instant link feature.
+A Zen mod that uses the I'm feeling lucky today feature from the Google search which redirects the user to the first search result.
 
 ## Features
 
@@ -8,7 +8,7 @@ A visual indicator mod that enhances Zen Browser's built-in instant link feature
 
 ## How It Works
 
-It uses the I'm feeling lucky today feature from the Google search which redirects the user to the first search result.
+Open the Link Bar (cmd+T) and press and hold shift while pressing enter.
 
 ## Installation with Sine
 
