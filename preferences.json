@@ -1,0 +1,34 @@
+[
+  {
+    "property": "mod.instant-lucky.enabled",
+    "label": "Instant Lucky aktivieren",
+    "type": "checkbox",
+    "defaultValue": true
+  },
+  {
+    "property": "mod.instant-lucky.search-engine",
+    "label": "Suchmaschine",
+    "type": "dropdown",
+    "options": [
+      {
+        "label": "Google",
+        "value": "google"
+      },
+      {
+        "label": "DuckDuckGo",
+        "value": "duckduckgo"
+      },
+      {
+        "label": "Bing",
+        "value": "bing"
+      }
+    ],
+    "defaultValue": "google"
+  },
+  {
+    "property": "mod.instant-lucky.show-indicator",
+    "label": "Visuellen Indikator anzeigen",
+    "type": "checkbox",
+    "defaultValue": true
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "name": "Instant Links",
+  "id": "instant-links-zen",
+  "description": "Shift+Enter öffnet direkt Google 'I'm Feeling Lucky' Ergebnisse",
+  "version": "1.0.0",
+  "author": "simonpassenbrunner",
+  "license": "MIT",
+  "repository": "https://github.com/simonpassenbrunner/Instant-Links-for-Zen",
+  "js": "index.js",
+  "css": "style.css",
+  "preferences": "preferences.json"
+}
