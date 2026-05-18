@@ -1,23 +1,5 @@
 #urlbar[instant-link-mode="true"] {
     outline: 2px solid var(--zen-colors-primary, #4285f4) !important;
-    outline-offset: -2px;
-}
-
-#urlbar[instant-link-mode="true"] #urlbar-input {
-    background-color: color-mix(in srgb, var(--zen-colors-primary, #4285f4) 10%, transparent) !important;
-}
-
-#urlbar[instant-link-mode="true"]::after {
-    content: "Shift+Enter: Instant Link";
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    color: var(--zen-colors-primary, #4285f4);
-    opacity: 0.8;
-    pointer-events: none;
-    font-weight: 500;
-    font-family: system-ui, -apple-system, sans-serif;
-    z-index: 1000;
+    outline-offset: -1px;
+    box-shadow: none !important;
 }

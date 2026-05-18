@@ -2,7 +2,6 @@
     'use strict';
 
     const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
-    const LUCKY_PARAM = '&btnI=I%27m+Feeling+Lucky';
 
     let shiftHeld = false;
     let initialized = false;
@@ -29,7 +28,7 @@
         input.addEventListener('keyup', handleKeyUp, true);
         input.addEventListener('blur', handleBlur, true);
 
-        console.log('[Instant Links] Ready. Hold Shift + Enter for instant navigation.');
+        console.log('[Instant Links] Ready.');
     }
 
     function handleKeyDown(event) {
@@ -81,28 +80,35 @@
             const firstUrl = extractFirstResult(text);
 
             if (firstUrl) {
-                const tab = gBrowser.addTrustedTab(firstUrl);
-                gBrowser.selectedTab = tab;
-                if (gURLBar) gURLBar.value = '';
-                console.log('[Instant Links] Opened:', firstUrl);
-            } else {
-                gBrowser.addTrustedTab(searchUrl + LUCKY_PARAM);
+                openTab(firstUrl);
             }
         } catch (e) {
             console.error('[Instant Links] Error:', e);
-            gBrowser.addTrustedTab(searchUrl + LUCKY_PARAM);
+        }
+    }
+
+    function openTab(url) {
+        try {
+            const tab = gBrowser.addTrustedTab(url);
+            gBrowser.selectedTab = tab;
+            if (gURLBar) gURLBar.value = '';
+            console.log('[Instant Links] Opened:', url);
+        } catch (e) {
+            console.error('[Instant Links] Tab error:', e);
         }
     }
 
     function extractFirstResult(html) {
         try {
             const doc = new DOMParser().parseFromString(html, 'text/html');
-            const link = doc.querySelector('a[href^="/url?q="]');
-            if (link) {
-                const url = link.href;
-                const match = url.match(/url\?q=(.*?)&sa=/);
-                if (match && match[1]) {
-                    return decodeURIComponent(match[1]);
+            const links = doc.querySelectorAll('a[href]');
+            for (const link of links) {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('/url?q=')) {
+                    const match = href.match(/url\?q=(.*?)&sa=/);
+                    if (match && match[1]) {
+                        return decodeURIComponent(match[1]);
+                    }
                 }
             }
         } catch (e) {}
