@@ -14,40 +14,51 @@
     }
 
     function onLoad() {
-        waitForUrlbar().then(() => {
-            console.log('[Instant Links] Initialized.');
-            attachListeners();
-        }).catch(() => {
-            console.error('[Instant Links] Failed to initialize.');
-        });
-    }
-
-    function waitForUrlbar() {
-        return new Promise((resolve, reject) => {
-            let attempts = 0;
-            const maxAttempts = 50;
-
-            function check() {
-                attempts++;
-                const input = document.getElementById('urlbar-input');
-                if (input) {
-                    resolve();
-                } else if (attempts < maxAttempts) {
-                    setTimeout(check, 100);
-                } else {
-                    reject();
-                }
+        let attempts = 0;
+        const tryAttach = () => {
+            const input = document.getElementById('urlbar-input');
+            if (input) {
+                attachToInput(input);
+                console.log('[Instant Links] Initialized.');
+            } else if (++attempts < 100) {
+                setTimeout(tryAttach, 100);
             }
-            check();
-        });
+        };
+        tryAttach();
+
+        document.addEventListener('keydown', onDocumentKeyDown, true);
+        document.addEventListener('keyup', onDocumentKeyUp, true);
     }
 
-    function attachListeners() {
-        const input = document.getElementById('urlbar-input');
-        if (!input) return;
-
+    function attachToInput(input) {
         input.addEventListener('keydown', onKeyDown, true);
         input.addEventListener('keyup', onKeyUp, true);
+    }
+
+    function onDocumentKeyDown(event) {
+        const input = document.getElementById('urlbar-input');
+        if (!input) return;
+        if (document.activeElement !== input && document.activeElement !== document.getElementById('urlbar')) return;
+
+        if (event.key === 'Shift') {
+            shiftHeld = true;
+            updateIndicator(true);
+        }
+
+        if (event.key === 'Enter' && shiftHeld) {
+            if (document.activeElement === input || document.activeElement?.closest('#urlbar')) {
+                event.preventDefault();
+                event.stopPropagation();
+                handleEnter();
+            }
+        }
+    }
+
+    function onDocumentKeyUp(event) {
+        if (event.key === 'Shift') {
+            shiftHeld = false;
+            updateIndicator(false);
+        }
     }
 
     function onKeyDown(event) {
