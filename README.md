@@ -1,54 +1,49 @@
 # Instant Links for Zen
 
-Ein Zen Browser Mod, der das "I'm Feeling Lucky" Feature direkt in die URL bar bringt.
+A Zen Browser mod that provides instant navigation from the URL bar.
 
 ## Features
 
-- **Shift+Enter Shortcut**: Halte `Shift` gedrückt und drücke `Enter` in der URL bar, um direkt zum ersten Google Suchergebnis zu springen
-- **Visueller Indikator**: Zeigt "I'm Feeling Lucky" an, wenn Shift gedrückt wird
-- **Konfigurierbar**: Wähle zwischen Google, DuckDuckGo und Bing
-- **Nativ**: Fühlt sich an wie ein eingebautes Feature
+- **Shift+Enter Shortcut**: Hold `Shift` and press `Enter` in the URL bar for instant page navigation
+- **Visual Indicator**: Shows "Instant Link" when Shift is held
+- **Configurable**: Choose between Google, DuckDuckGo, and Bing
+- **Native Feel**: Works like a built-in browser feature
 
-## Installation mit Sine
+## Installation with Sine
 
-1. Installiere [Sine](https://github.com/CosmoCreeper/Sine) falls noch nicht vorhanden
-2. Öffne Sine und füge diese Repository URL hinzu:
+1. Install [Sine](https://github.com/CosmoCreeper/Sine) if you haven't already
+2. Open Sine and add this repository URL:
    ```
-   https://github.com/simonpassenbrunner/Instant-Links-for-Zen
+   https://github.com/popcornfuzzy/Instant-Links-for-Zen
    ```
-3. Klicke auf "Install" für den Instant Links Mod
-4. Starte Zen Browser neu
+3. Click "Install" on the Instant Links mod
+4. Restart Zen Browser
 
-## Manuelle Installation (fx-autoconfig)
+## Manual Installation (fx-autoconfig)
 
-1. Installiere [fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig)
-2. Kopiere `index.js` in deinen `chrome/JS/` Ordner
-3. Kopiere `style.css` in deinen `chrome/` Ordner
-4. Füge zu `userChrome.css` hinzu: `@import "style.css";`
-5. Starte Zen neu
+1. Install [fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig)
+2. Copy `index.js` to your `chrome/JS/` folder
+3. Copy `style.css` to your `chrome/` folder
+4. Add to `userChrome.css`: `@import "style.css";`
+5. Restart Zen
 
-## Verwendung
+## Usage
 
-1. Öffne einen neuen Tab (`Ctrl+T` / `Cmd+T`)
-2. Tippe deine Suche in die URL bar
-3. Drücke `Enter` für normale Suche
-4. Halte `Shift` + drücke `Enter` für "I'm Feeling Lucky"
+1. Open a new tab (`Ctrl+T` / `Cmd+T`)
+2. Type your search query in the URL bar
+3. Press `Enter` for normal search
+4. Hold `Shift` + press `Enter` for instant navigation
 
-## Einstellungen
+## Settings
 
-In `about:config` oder über Sine:
+In `about:config` or via Sine:
 
-| Einstellung | Standard | Beschreibung |
-|-------------|----------|--------------|
-| `mod.instant-lucky.enabled` | `true` | Mod aktivieren/deaktivieren |
-| `mod.instant-lucky.search-engine` | `google` | Suchmaschine wählen (google, duckduckgo, bing) |
-| `mod.instant-lucky.show-indicator` | `true` | Visuellen Indikator anzeigen |
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `mod.instant-links.enabled` | `true` | Enable/disable the mod |
+| `mod.instant-links.search-engine` | `google` | Search engine (google, duckduckgo, bing) |
+| `mod.instant-links.show-indicator` | `true` | Show visual indicator |
 
-## Technische Details
-
-- **Google**: Nutzt `&btnI=I%27m+Feeling+Lucky` Parameter für "I'm Feeling Lucky"
-- **DuckDuckGo/Bing**: Öffnet die erste Suchergebnis-URL direkt
-
-## Lizenz
+## License
 
 MIT License

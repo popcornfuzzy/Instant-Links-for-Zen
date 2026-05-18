@@ -1,13 +1,13 @@
 [
   {
-    "property": "mod.instant-lucky.enabled",
-    "label": "Instant Lucky aktivieren",
+    "property": "mod.instant-links.enabled",
+    "label": "Enable Instant Links",
     "type": "checkbox",
     "defaultValue": true
   },
   {
-    "property": "mod.instant-lucky.search-engine",
-    "label": "Suchmaschine",
+    "property": "mod.instant-links.search-engine",
+    "label": "Search Engine",
     "type": "dropdown",
     "options": [
       {
@@ -26,8 +26,8 @@
     "defaultValue": "google"
   },
   {
-    "property": "mod.instant-lucky.show-indicator",
-    "label": "Visuellen Indikator anzeigen",
+    "property": "mod.instant-links.show-indicator",
+    "label": "Show Indicator",
     "type": "checkbox",
     "defaultValue": true
   }
