@@ -11,19 +11,12 @@ Ein Zen Browser Mod, der das "I'm Feeling Lucky" Feature direkt in die URL bar b
 
 ## Installation
 
-### Über Sine (Empfohlen)
+### Über Sine 
 
 1. Installiere [Sine](https://github.com/CosmoCreeper/Sine)
-2. Füge diese Repository URL hinzu: `https://github.com/simonpassenbrunner/Instant-Links-for-Zen`
+2. Füge diese Repository URL hinzu: `https://github.com/popcornfuzzy/Instant-Links-for-Zen`
 3. Aktiviere den Mod in Sine
 
-### Manuell (fx-autoconfig)
-
-1. Installiere [fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig)
-2. Kopiere `index.js` in deinen `chrome/JS/` Ordner
-3. Kopiere `style.css` in deinen `chrome/` Ordner
-4. Füge zu `userChrome.css` hinzu: `@import "style.css";`
-5. Starte Zen neu
 
 ## Verwendung
 
