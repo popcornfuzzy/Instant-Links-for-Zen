@@ -73,7 +73,7 @@
 
         console.log('[Instant Links] Query:', value);
 
-        const searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(value);
+        const searchUrl = 'https://www.google.com/search?btnI=1&q=' + encodeURIComponent(value);
 
         openTab(searchUrl);
         shiftHeld = false;
