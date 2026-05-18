@@ -6,14 +6,14 @@
   "author": "popcornfuzzy",
   "license": "MIT",
   "repository": "https://github.com/popcornfuzzy/Instant-Links-for-Zen",
+  "preferences": "preferences.json",
+  "style": "style.css",
+  "readme": "README.md",
   "scripts": {
     "instant-links.uc.js": {
       "include": ["chrome://browser/content/browser.xhtml"]
     }
   },
-  "preferences": "preferences.json",
-  "style": "style.css",
-  "readme": "README.md",
   "tags": ["URL Bar", "Instant", "Navigation"],
   "createdAt": "2025-05-18",
   "updatedAt": "2026-05-18"

@@ -4,9 +4,9 @@ A Zen Browser mod that provides instant navigation from the URL bar.
 
 ## Features
 
-- **Shift+Enter Shortcut**: Hold `Shift` and press `Enter` in the URL bar for instant page navigation
+- **Shift+Enter Shortcut**: Hold `Shift` and press `Enter` in the URL bar for instant navigation to the most relevant result
 - **Visual Indicator**: Shows "Instant Link" when Shift is held
-- **Configurable**: Choose between Google, DuckDuckGo, and Bing
+- **Configurable**: Choose between Google, DuckDuckGo, and Bing search engines
 - **Native Feel**: Works like a built-in browser feature
 
 ## Installation with Sine
@@ -22,7 +22,7 @@ A Zen Browser mod that provides instant navigation from the URL bar.
 ## Manual Installation (fx-autoconfig)
 
 1. Install [fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig)
-2. Copy `index.js` to your `chrome/JS/` folder
+2. Copy `instant-links.uc.js` to your `chrome/JS/` folder
 3. Copy `style.css` to your `chrome/` folder
 4. Add to `userChrome.css`: `@import "style.css";`
 5. Restart Zen

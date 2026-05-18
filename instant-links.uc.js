@@ -1,12 +1,3 @@
-// ==UserScript==
-// @name            Instant Links
-// @description     Hold Shift+Enter in the URL bar for instant page navigation
-// @author          popcornfuzzy
-// @version         1.0.0
-// @include         chrome://browser/content/browser.xhtml
-// @grant           GM_log
-// ==/UserScript==
-
 (function() {
     'use strict';
 
@@ -34,9 +25,7 @@
             const type = Services.prefs.getPrefType(name);
             if (type === Services.prefs.PREF_BOOL) return Services.prefs.getBoolPref(name);
             if (type === Services.prefs.PREF_STRING) return Services.prefs.getStringPref(name);
-        } catch (e) {
-            console.warn('[Instant Links] Pref error:', e);
-        }
+        } catch (e) {}
         return defaultValue;
     }
 
@@ -60,7 +49,6 @@
     function attachListeners() {
         const input = document.getElementById('urlbar-input');
         if (!input) {
-            console.log('[Instant Links] URL bar input not found, retrying...');
             setTimeout(attachListeners, 200);
             return;
         }
@@ -117,9 +105,9 @@
         try {
             gBrowser.addTrustedTab(url);
             if (gURLBar) gURLBar.value = '';
-            console.log('[Instant Links] Opened instant link:', url);
+            console.log('[Instant Links] Opened:', url);
         } catch (e) {
-            console.error('[Instant Links] Error opening tab:', e);
+            console.error('[Instant Links] Error:', e);
         }
     }
 
