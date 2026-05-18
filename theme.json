@@ -1,12 +1,20 @@
 {
+  "id": "instant-links",
   "name": "Instant Links",
-  "id": "instant-links-zen",
   "description": "Hold Shift+Enter in the URL bar for instant page navigation",
   "version": "1.0.0",
   "author": "popcornfuzzy",
   "license": "MIT",
-  "repository": "https://github.com/simonpassenbrunner/Instant-Links-for-Zen",
-  "js": "index.js",
-  "css": "style.css",
-  "preferences": "preferences.json"
+  "repository": "https://github.com/popcornfuzzy/Instant-Links-for-Zen",
+  "scripts": {
+    "instant-links.uc.js": {
+      "include": ["chrome://browser/content/browser.xhtml"]
+    }
+  },
+  "preferences": "preferences.json",
+  "style": "style.css",
+  "readme": "README.md",
+  "tags": ["URL Bar", "Instant", "Navigation"],
+  "createdAt": "2025-05-18",
+  "updatedAt": "2026-05-18"
 }

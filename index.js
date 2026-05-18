@@ -1,58 +1,134 @@
+// ==UserScript==
+// @name            Instant Links
+// @description     Hold Shift+Enter in the URL bar for instant page navigation
+// @author          popcornfuzzy
+// @version         1.0.0
+// @include         chrome://browser/content/browser.xhtml
+// @grant           GM_log
+// ==/UserScript==
+
 (function() {
     'use strict';
 
-    const PREF_PREFIX = 'mod.instant-links.';
-    const LUCKY_PARAMS = {
-        google: '&btnI=I%27m+Feeling+Lucky',
-        duckduckgo: '',
-        bing: ''
-    };
+    const PREF_ENABLED = 'mod.instant-links.enabled';
+    const PREF_INDICATOR = 'mod.instant-links.show-indicator';
+    const PREF_ENGINE = 'mod.instant-links.search-engine';
+
     const SEARCH_URLS = {
         google: 'https://www.google.com/search?q=',
         duckduckgo: 'https://duckduckgo.com/?q=',
         bing: 'https://www.bing.com/search?q='
     };
 
+    const LUCKY_PARAMS = {
+        google: '&btnI=I%27m+Feeling+Lucky',
+        duckduckgo: '',
+        bing: ''
+    };
+
     let shiftHeld = false;
-    let enabled = true;
-    let showIndicator = true;
-    let searchEngine = 'google';
+    let initialized = false;
 
     function getPref(name, defaultValue) {
         try {
             const type = Services.prefs.getPrefType(name);
-            if (type === Services.prefs.PREF_STRING) return Services.prefs.getStringPref(name);
-            if (type === Services.prefs.PREF_INT) return Services.prefs.getIntPref(name);
             if (type === Services.prefs.PREF_BOOL) return Services.prefs.getBoolPref(name);
-        } catch (e) {}
+            if (type === Services.prefs.PREF_STRING) return Services.prefs.getStringPref(name);
+        } catch (e) {
+            console.warn('[Instant Links] Pref error:', e);
+        }
         return defaultValue;
     }
 
-    function loadPrefs() {
-        enabled = getPref(PREF_PREFIX + 'enabled', true);
-        showIndicator = getPref(PREF_PREFIX + 'show-indicator', true);
-        searchEngine = getPref(PREF_PREFIX + 'search-engine', 'google');
+    function init() {
+        if (!getPref(PREF_ENABLED, true)) {
+            console.log('[Instant Links] Disabled by preference.');
+            return;
+        }
+        if (initialized) return;
+        initialized = true;
+
+        if (document.readyState === 'complete') {
+            attachListeners();
+        } else {
+            window.addEventListener('load', attachListeners);
+        }
+
+        console.log('[Instant Links] Initialized. Hold Shift + Enter for instant navigation.');
     }
 
-    function openLuckyTab(input) {
-        if (!input || !input.trim()) return;
-        const baseUrl = SEARCH_URLS[searchEngine] || SEARCH_URLS.google;
-        const luckyParam = LUCKY_PARAMS[searchEngine] || '';
-        const url = baseUrl + encodeURIComponent(input.trim()) + luckyParam;
+    function attachListeners() {
+        const input = document.getElementById('urlbar-input');
+        if (!input) {
+            console.log('[Instant Links] URL bar input not found, retrying...');
+            setTimeout(attachListeners, 200);
+            return;
+        }
 
-        try {
-            gBrowser.addTrustedTab(url);
-            const urlbar = document.getElementById('urlbar');
-            if (urlbar) urlbar.value = '';
-        } catch (e) {
-            console.error('[Instant Links] Error:', e);
+        input.addEventListener('keydown', handleKeyDown, true);
+        input.addEventListener('keyup', handleKeyUp, true);
+        input.addEventListener('blur', handleBlur, true);
+
+        console.log('[Instant Links] Listeners attached to URL bar.');
+    }
+
+    function handleKeyDown(event) {
+        if (!getPref(PREF_ENABLED, true)) return;
+
+        if (event.key === 'Shift' && !event.repeat) {
+            shiftHeld = true;
+            updateIndicator(true);
+        }
+
+        if (event.key === 'Enter' && shiftHeld) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const input = document.getElementById('urlbar-input');
+            const value = input?.value?.trim() || '';
+
+            if (value && !value.match(/^https?:\/\//) && !value.includes('.') && !value.includes(' ')) {
+                openInstantTab(value);
+            }
+
+            shiftHeld = false;
+            updateIndicator(false);
         }
     }
 
-    function setIndicator(active) {
-        if (!showIndicator) return;
+    function handleKeyUp(event) {
+        if (event.key === 'Shift') {
+            shiftHeld = false;
+            updateIndicator(false);
+        }
+    }
+
+    function handleBlur() {
+        shiftHeld = false;
+        updateIndicator(false);
+    }
+
+    function openInstantTab(query) {
+        const engine = getPref(PREF_ENGINE, 'google');
+        const baseUrl = SEARCH_URLS[engine] || SEARCH_URLS.google;
+        const luckyParam = LUCKY_PARAMS[engine] || '';
+        const url = baseUrl + encodeURIComponent(query) + luckyParam;
+
+        try {
+            gBrowser.addTrustedTab(url);
+            if (gURLBar) gURLBar.value = '';
+            console.log('[Instant Links] Opened instant link:', url);
+        } catch (e) {
+            console.error('[Instant Links] Error opening tab:', e);
+        }
+    }
+
+    function updateIndicator(active) {
+        if (!getPref(PREF_INDICATOR, true)) return;
+
         const urlbar = document.getElementById('urlbar');
         if (!urlbar) return;
+
         if (active) {
             urlbar.setAttribute('instant-links', 'true');
         } else {
@@ -60,57 +136,5 @@
         }
     }
 
-    function handleKeyDown(e) {
-        if (!enabled) return;
-        if (e.target.id !== 'urlbar-input' && !e.target.classList.contains('urlbar-input')) return;
-
-        if (e.key === 'Shift' && !e.repeat) {
-            shiftHeld = true;
-            setIndicator(true);
-        }
-
-        if (e.key === 'Enter' && shiftHeld) {
-            e.preventDefault();
-            e.stopPropagation();
-            const input = gURLBar?.value || '';
-            if (input && !input.match(/^https?:\/\//) && !input.includes('.') && !input.includes(' ')) {
-                openLuckyTab(input);
-            }
-            shiftHeld = false;
-            setIndicator(false);
-        }
-    }
-
-    function handleKeyUp(e) {
-        if (e.key === 'Shift') {
-            shiftHeld = false;
-            setIndicator(false);
-        }
-    }
-
-    function handleBlur() {
-        shiftHeld = false;
-        setIndicator(false);
-    }
-
-    function attachListeners() {
-        const urlbar = document.getElementById('urlbar-input');
-        if (!urlbar) {
-            setTimeout(attachListeners, 500);
-            return;
-        }
-
-        urlbar.addEventListener('keydown', handleKeyDown, true);
-        urlbar.addEventListener('keyup', handleKeyUp, true);
-        urlbar.addEventListener('blur', handleBlur, true);
-
-        console.log('[Instant Links] Initialized. Hold Shift + Enter for instant link.');
-    }
-
-    loadPrefs();
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        attachListeners();
-    } else {
-        window.addEventListener('DOMContentLoaded', attachListeners);
-    }
+    init();
 })();
