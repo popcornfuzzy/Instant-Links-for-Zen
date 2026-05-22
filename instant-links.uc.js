@@ -2,6 +2,10 @@
     'use strict';
 
     let shiftHeld = false;
+    let hintObserver = null;
+    let hintContainer = null;
+    let hintUpdateTimer = null;
+    let currentHintRow = null;
 
     function init() {
         if (document.readyState !== 'complete') {
@@ -17,6 +21,7 @@
             const input = document.getElementById('urlbar-input');
             if (input) {
                 attachToInput(input);
+                setupHintObservers(input);
                 console.log('[Instant Links] Initialized.');
             } else if (++attempts < 100) {
                 setTimeout(tryAttach, 100);
@@ -55,47 +60,143 @@
         if (urlbar) {
             if (active) {
                 urlbar.setAttribute('instant-link-mode', 'true');
-                injectHint();
             } else {
                 urlbar.removeAttribute('instant-link-mode');
-                removeHint();
             }
         }
     }
 
-    function injectHint() {
-        let hint = document.getElementById('instant-link-hint');
-        if (hint) return;
+    function setupHintObservers(input) {
+        input.addEventListener('input', scheduleHintUpdate, true);
+        input.addEventListener('focus', scheduleHintUpdate, true);
+        window.addEventListener('resize', scheduleHintUpdate, true);
+        scheduleHintUpdate();
+    }
 
-        const results = document.getElementById('urlbar-results');
-        if (!results) return;
+    function scheduleHintUpdate() {
+        if (hintUpdateTimer) {
+            clearTimeout(hintUpdateTimer);
+        }
+        hintUpdateTimer = setTimeout(updateHint, 0);
+        observeResults();
+    }
 
-        const firstRow = results.querySelector('.urlbarView-row[type="search"], .urlbarView-row[actiontype="searchengine"]');
-        if (!firstRow) return;
+    function observeResults() {
+        const results = getResultsRoot();
+        if (!results || results === hintContainer) return;
 
-        hint = document.createElement('div');
-        hint.id = 'instant-link-hint';
+        if (hintObserver) {
+            hintObserver.disconnect();
+        }
+        hintContainer = results;
+        hintObserver = new MutationObserver(scheduleHintUpdate);
+        hintObserver.observe(results, { childList: true, subtree: true, attributes: true });
+    }
+
+    function getResultsRoot() {
+        return (
+            document.getElementById('urlbar-results') ||
+            document.getElementById('urlbarView-results') ||
+            document.querySelector('.urlbarView-results')
+        );
+    }
+
+    function shouldShowHint(rows) {
+        if (!rows.length) return false;
+        for (const row of rows) {
+            if (row.hasAttribute('has-url')) return false;
+            const type = row.getAttribute('type');
+            const actionType = row.getAttribute('actiontype');
+            if (type && type !== 'search') return false;
+            if (!type && actionType !== 'searchengine') return false;
+        }
+        return true;
+    }
+
+    function updateHint() {
+        const results = getResultsRoot();
+        if (!results) {
+            removeHint();
+            return;
+        }
+
+        const rows = Array.from(results.querySelectorAll('.urlbarView-row'));
+        if (!shouldShowHint(rows)) {
+            removeHint();
+            return;
+        }
+
+        const targetRow = rows.find(
+            (row) =>
+                row.getAttribute('type') === 'search' ||
+                row.getAttribute('actiontype') === 'searchengine'
+        );
+
+        if (!targetRow) {
+            removeHint();
+            return;
+        }
+
+        ensureHint(targetRow);
+    }
+
+    function ensureHint(row) {
+        if (currentHintRow && currentHintRow !== row) {
+            removeHint();
+        }
+
+        let hint = row.querySelector('.instant-link-hint');
+        if (hint) {
+            currentHintRow = row;
+            return;
+        }
+
+        hint = document.createElement('span');
+        hint.className = 'instant-link-hint';
         hint.style.cssText = `
             position: absolute;
             right: 12px;
             top: 50%;
             transform: translateY(-50%);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-size: 11px;
             font-weight: 600;
             white-space: nowrap;
-            color: var(--toolbar-field-color, #cdd6f4);
+            color: var(--toolbar-field-color, var(--lwt-text-color, #cdd6f4));
             pointer-events: none;
             z-index: 1000;
         `;
-        hint.textContent = '⬆ Shift+Enter';
 
-        firstRow.style.position = 'relative';
-        firstRow.appendChild(hint);
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('width', '12');
+        svg.setAttribute('height', '12');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('focusable', 'false');
+        svg.style.fill = 'currentColor';
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute(
+            'd',
+            'M8.65 17.65 12 14.3l3.35 3.35q.3.3.7.3t.7-.3q.3-.3.3-.7t-.3-.7l-4-4q-.3-.3-.7-.3t-.7.3l-4 4q-.3.3-.3.7t.3.7q.3.3.7.3t.7-.3ZM7 10q-.825 0-1.413-.588Q5 8.825 5 8V6q0-.825.587-1.413Q6.175 4 7 4h10q.825 0 1.413.587Q19 5.175 19 6v2q0 .825-.587 1.412Q17.825 10 17 10Z'
+        );
+        svg.appendChild(path);
+
+        const text = document.createElement('span');
+        text.textContent = 'Shift+Enter';
+
+        hint.append(svg, text);
+        row.style.position = 'relative';
+        row.appendChild(hint);
+        currentHintRow = row;
     }
 
     function removeHint() {
-        const hint = document.getElementById('instant-link-hint');
+        const hint = document.querySelector('.instant-link-hint');
         if (hint) hint.remove();
+        currentHintRow = null;
     }
 
     function handleEnter() {

@@ -3,18 +3,3 @@
     outline-offset: -1px;
     box-shadow: none !important;
 }
-
-/* Hint for top search result – inject via ::after on row */
-#urlbar-results .urlbarView-row[type="search"]:first-child .urlbarView-no-wrap::after,
-#urlbarView-results .urlbarView-row[type="search"]:first-child .urlbarView-no-wrap::after,
-#urlbar-results .urlbarView-row[actiontype="searchengine"]:first-child .urlbarView-no-wrap::after,
-#urlbarView-results .urlbarView-row[actiontype="searchengine"]:first-child .urlbarView-no-wrap::after {
-    content: "⬆ Hold Shift+Enter";
-    display: inline;
-    margin-inline-start: 12px;
-    font-size: 11px;
-    font-weight: 500;
-    white-space: nowrap;
-    color: var(--toolbar-field-color, var(--lwt-text-color, #cdd6f4)) !important;
-    opacity: 0.9;
-}
