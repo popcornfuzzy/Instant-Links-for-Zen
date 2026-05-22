@@ -4,8 +4,10 @@
     box-shadow: none !important;
 }
 
-#urlbar-results .urlbarView-row:first-child .urlbarView-row-inner::after,
-#urlbarView-results .urlbarView-row:first-child .urlbarView-row-inner::after {
+#urlbar-results .urlbarView-row:first-child[type="search"] .urlbarView-row-inner::after,
+#urlbar-results .urlbarView-row:first-child[actiontype="searchengine"] .urlbarView-row-inner::after,
+#urlbarView-results .urlbarView-row:first-child[type="search"] .urlbarView-row-inner::after,
+#urlbarView-results .urlbarView-row:first-child[actiontype="searchengine"] .urlbarView-row-inner::after {
     content: "Hold Shift + Enter for top result";
     display: inline-flex;
     align-items: center;
