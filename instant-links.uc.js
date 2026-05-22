@@ -55,10 +55,47 @@
         if (urlbar) {
             if (active) {
                 urlbar.setAttribute('instant-link-mode', 'true');
+                injectHint();
             } else {
                 urlbar.removeAttribute('instant-link-mode');
+                removeHint();
             }
         }
+    }
+
+    function injectHint() {
+        let hint = document.getElementById('instant-link-hint');
+        if (hint) return;
+
+        const results = document.getElementById('urlbar-results');
+        if (!results) return;
+
+        const firstRow = results.querySelector('.urlbarView-row[type="search"], .urlbarView-row[actiontype="searchengine"]');
+        if (!firstRow) return;
+
+        hint = document.createElement('div');
+        hint.id = 'instant-link-hint';
+        hint.style.cssText = `
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            color: var(--toolbar-field-color, #cdd6f4);
+            pointer-events: none;
+            z-index: 1000;
+        `;
+        hint.textContent = '⬆ Shift+Enter';
+
+        firstRow.style.position = 'relative';
+        firstRow.appendChild(hint);
+    }
+
+    function removeHint() {
+        const hint = document.getElementById('instant-link-hint');
+        if (hint) hint.remove();
     }
 
     function handleEnter() {
