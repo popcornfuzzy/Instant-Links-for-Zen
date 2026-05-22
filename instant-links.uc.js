@@ -101,18 +101,6 @@
         );
     }
 
-    function shouldShowHint(rows) {
-        if (!rows.length) return false;
-        for (const row of rows) {
-            if (row.hasAttribute('has-url')) return false;
-            const type = row.getAttribute('type');
-            const actionType = row.getAttribute('actiontype');
-            if (type && type !== 'search') return false;
-            if (!type && actionType !== 'searchengine') return false;
-        }
-        return true;
-    }
-
     function updateHint() {
         const results = getResultsRoot();
         if (!results) {
@@ -120,24 +108,22 @@
             return;
         }
 
-        const rows = Array.from(results.querySelectorAll('.urlbarView-row'));
-        if (!shouldShowHint(rows)) {
+        const selectedRow = results.querySelector('.urlbarView-row[selected]');
+        if (!selectedRow) {
             removeHint();
             return;
         }
 
-        const targetRow = rows.find(
-            (row) =>
-                row.getAttribute('type') === 'search' ||
-                row.getAttribute('actiontype') === 'searchengine'
-        );
+        const isSearchRow =
+            selectedRow.getAttribute('type') === 'search' ||
+            selectedRow.getAttribute('actiontype') === 'searchengine';
 
-        if (!targetRow) {
+        if (!isSearchRow) {
             removeHint();
             return;
         }
 
-        ensureHint(targetRow);
+        ensureHint(selectedRow);
     }
 
     function ensureHint(row) {
@@ -171,8 +157,8 @@
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('width', '12');
-        svg.setAttribute('height', '12');
+        svg.setAttribute('width', '14');
+        svg.setAttribute('height', '14');
         svg.setAttribute('aria-hidden', 'true');
         svg.setAttribute('focusable', 'false');
         svg.style.fill = 'currentColor';
