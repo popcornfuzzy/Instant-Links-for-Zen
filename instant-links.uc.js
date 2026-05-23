@@ -154,7 +154,7 @@
             font-size: 11px;
             font-weight: 600;
             white-space: nowrap;
-            color: var(--toolbar-field-color, var(--lwt-text-color, #cdd6f4));
+            color: inherit;
             pointer-events: none;
             z-index: 1000;
         `;
@@ -186,11 +186,10 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 6px;
-            background: var(--toolbar-field-background-color, #ffffff);
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            color: #5f6368;
+            background: color-mix(in srgb, currentColor 16%, transparent);
+            color: inherit;
         `;
 
     const shiftIcon = createIcon([
