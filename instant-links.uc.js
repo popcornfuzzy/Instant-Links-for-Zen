@@ -193,8 +193,7 @@
         `;
 
     const shiftIcon = createIcon([
-      { name: "line", attrs: { x1: "12", y1: "19", x2: "12", y2: "5" } },
-      { name: "polyline", attrs: { points: "5 12 12 5 19 12" } },
+      { name: "path", attrs: { d: "M12 5L4 13h4v6h8v-6h4L12 5z" } },
     ]);
 
     const returnIcon = createIcon([
