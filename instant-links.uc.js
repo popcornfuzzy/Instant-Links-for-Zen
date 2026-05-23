@@ -145,12 +145,12 @@
     hint.className = "instant-link-hint";
     hint.style.cssText = `
             position: absolute;
-            right: 12px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 8px;
             font-size: 11px;
             font-weight: 600;
             white-space: nowrap;
@@ -159,25 +159,56 @@
             z-index: 1000;
         `;
 
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 24 24");
-    svg.setAttribute("width", "14");
-    svg.setAttribute("height", "14");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("focusable", "false");
-    svg.style.fill = "currentColor";
+    const createIcon = (nodes) => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("width", "12");
+      svg.setAttribute("height", "12");
+      svg.setAttribute("aria-hidden", "true");
+      svg.setAttribute("focusable", "false");
+      svg.style.cssText =
+        "fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;";
 
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute(
-      "d",
-      "M8.65 17.65 12 14.3l3.35 3.35q.3.3.7.3t.7-.3q.3-.3.3-.7t-.3-.7l-4-4q-.3-.3-.7-.3t-.7.3l-4 4q-.3.3-.3.7t.3.7q.3.3.7.3t.7-.3ZM7 10q-.825 0-1.413-.588Q5 8.825 5 8V6q0-.825.587-1.413Q6.175 4 7 4h10q.825 0 1.413.587Q19 5.175 19 6v2q0 .825-.587 1.412Q17.825 10 17 10Z",
-    );
-    svg.appendChild(path);
+      nodes.forEach(({ name, attrs }) => {
+        const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+        Object.entries(attrs).forEach(([key, value]) => {
+          node.setAttribute(key, value);
+        });
+        svg.appendChild(node);
+      });
+
+      return svg;
+    };
+
+    const iconBox = document.createElement("span");
+    iconBox.className = "instant-link-hint-icons";
+    iconBox.style.cssText = `
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: var(--toolbar-field-background-color, #ffffff);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            color: #5f6368;
+        `;
+
+    const shiftIcon = createIcon([
+      { name: "line", attrs: { x1: "12", y1: "19", x2: "12", y2: "5" } },
+      { name: "polyline", attrs: { points: "5 12 12 5 19 12" } },
+    ]);
+
+    const returnIcon = createIcon([
+      { name: "polyline", attrs: { points: "9 10 5 14 9 18" } },
+      { name: "path", attrs: { d: "M19 6v6a4 4 0 0 1-4 4H5" } },
+    ]);
+
+    iconBox.append(shiftIcon, returnIcon);
 
     const text = document.createElement("span");
-    text.textContent = "Shift+Enter for top result";
+    text.textContent = "Open top result instantly";
 
-    hint.append(svg, text);
+    hint.append(text, iconBox);
     row.style.position = "relative";
     row.appendChild(hint);
     currentHintRow = row;
