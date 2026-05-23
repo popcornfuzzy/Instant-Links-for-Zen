@@ -180,22 +180,6 @@
       return svg;
     };
 
-    const createFilledIcon = (viewBox, pathData) => {
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("viewBox", viewBox);
-      svg.setAttribute("width", "12");
-      svg.setAttribute("height", "12");
-      svg.setAttribute("aria-hidden", "true");
-      svg.setAttribute("focusable", "false");
-      svg.style.cssText = "fill: currentColor;";
-
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", pathData);
-      svg.appendChild(path);
-
-      return svg;
-    };
-
     const iconBox = document.createElement("span");
     iconBox.className = "instant-link-hint-icons";
     iconBox.style.cssText = `
@@ -208,10 +192,10 @@
             color: inherit;
         `;
 
-    const shiftIcon = createFilledIcon(
-      "0 -960 960 960",
-      "M320-160v-280H204q-26 0-36.5-22.5T173-505l276-337q12-15 31-15t31 15l276 337q16 20 5.5 42.5T756-440H640v280q0 17-11.5 28.5T600-120H360q-17 0-28.5-11.5T320-160Zm80-40h160v-320h111L480-754 289-520h111v320Zm80-320Z",
-    );
+    const shiftIcon = createIcon([
+      { name: "line", attrs: { x1: "12", y1: "19", x2: "12", y2: "5" } },
+      { name: "polyline", attrs: { points: "5 12 12 5 19 12" } },
+    ]);
 
     const returnIcon = createIcon([
       { name: "polyline", attrs: { points: "9 10 5 14 9 18" } },
