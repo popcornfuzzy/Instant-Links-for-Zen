@@ -3,3 +3,21 @@
     outline-offset: -1px;
     box-shadow: none !important;
 }
+
+.urlbarView-row:has(.instant-link-hint) .urlbarView-row-inner,
+.urlbarView-row[has-instant-hint] .urlbarView-row-inner {
+    box-sizing: border-box !important;
+    padding-inline-end: calc(var(--instant-link-hint-width, 220px) + 16px) !important;
+}
+
+.urlbarView-row:has(.instant-link-hint) .urlbarView-no-wrap,
+.urlbarView-row[has-instant-hint] .urlbarView-no-wrap {
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+@media (max-width: 550px) {
+    .instant-link-hint-text {
+        display: none !important;
+    }
+}

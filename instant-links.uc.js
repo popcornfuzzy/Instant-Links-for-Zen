@@ -130,6 +130,35 @@
     ensureHint(selectedRow);
   }
 
+  function applyRowPadding(row, hint) {
+    if (!row || !hint) return;
+    row.setAttribute("has-instant-hint", "true");
+    const rect = hint.getBoundingClientRect();
+    const measured =
+      rect.width > 50
+        ? rect.width
+        : hint.offsetWidth > 50
+          ? hint.offsetWidth
+          : 215;
+    const hintWidth = Math.ceil(measured);
+    row.style.setProperty("--instant-link-hint-width", `${hintWidth}px`);
+    const rowInner = row.querySelector(".urlbarView-row-inner");
+    if (rowInner) {
+      rowInner.style.paddingInlineEnd = `calc(${hintWidth}px + 16px)`;
+    }
+  }
+
+  function clearRowPadding(row) {
+    if (!row) return;
+    row.removeAttribute("has-instant-hint");
+    row.style.removeProperty("--instant-link-hint-width");
+    row.style.removeProperty("position");
+    const rowInner = row.querySelector(".urlbarView-row-inner");
+    if (rowInner) {
+      rowInner.style.removeProperty("padding-inline-end");
+    }
+  }
+
   function ensureHint(row) {
     if (currentHintRow && currentHintRow !== row) {
       removeHint();
@@ -138,6 +167,7 @@
     let hint = row.querySelector(".instant-link-hint");
     if (hint) {
       currentHintRow = row;
+      applyRowPadding(row, hint);
       return;
     }
 
@@ -190,6 +220,7 @@
             border-radius: 6px;
             background: color-mix(in srgb, currentColor 16%, transparent);
             color: inherit;
+            flex-shrink: 0;
         `;
 
     const shiftIcon = createIcon([
@@ -204,17 +235,34 @@
     iconBox.append(shiftIcon, returnIcon);
 
     const text = document.createElement("span");
+    text.className = "instant-link-hint-text";
     text.textContent = "Open top result instantly";
 
     hint.append(text, iconBox);
     row.style.position = "relative";
     row.appendChild(hint);
     currentHintRow = row;
+
+    applyRowPadding(row, hint);
+    requestAnimationFrame(() => {
+      if (hint.isConnected && currentHintRow === row) {
+        applyRowPadding(row, hint);
+      }
+    });
   }
 
   function removeHint() {
     const hint = document.querySelector(".instant-link-hint");
     if (hint) hint.remove();
+    if (currentHintRow) {
+      clearRowPadding(currentHintRow);
+    }
+    const styledRows = document.querySelectorAll(
+      ".urlbarView-row[has-instant-hint]"
+    );
+    for (const r of styledRows) {
+      clearRowPadding(r);
+    }
     currentHintRow = null;
   }
 
